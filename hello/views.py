@@ -1,20 +1,23 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
-from .models import Greeting
+from .models import PageView
 
-# Create your views here.
+
+def tag(request, tag):
+    user_agent = request.META.get('HTTP_USER_AGENT')
+    ip = get_client_ip(request)
+    pageview = PageView.objects.create(user_agent=user_agent, ip=ip, tag=tag)
+    pageview.save()
+    return render(request, 'tag.html')
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def index(request):
-    # return HttpResponse('Hello from Python!')
-    return render(request, 'index.html')
-
-
-def db(request):
-
-    greeting = Greeting()
-    greeting.save()
-
-    greetings = Greeting.objects.all()
-
-    return render(request, 'db.html', {'greetings': greetings})
+    return render(request, 'index.html', { 'pageviews': PageView.objects.all()})
 

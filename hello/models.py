@@ -1,5 +1,9 @@
 from django.db import models
 
-# Create your models here.
-class Greeting(models.Model):
-    when = models.DateTimeField('date created', auto_now_add=True)
+class PageView(models.Model):
+    timestamp = models.DateTimeField(auto_now=True)
+    user_agent = models.TextField(default='unknown')
+    ip = models.GenericIPAddressField()
+    tag = models.CharField(max_length=140)
+
+
